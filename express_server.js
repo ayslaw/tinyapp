@@ -20,7 +20,18 @@ function generateRandomString() {
   return Math.random().toString(36).slice(2, 8);
 }
 
-
+const users = { 
+  "userRandomID": {
+    id: "userRandomID", 
+    email: "user@example.com", 
+    password: "purple-monkey-dinosaur"
+  },
+  "user2RandomID": {
+    id: "user2RandomID", 
+    email: "user2@example.com", 
+    password: "dishwasher-funk"
+  }
+};
 
 
 app.listen(PORT, () => {
@@ -97,9 +108,14 @@ app.get("/register", (req, res) => {
 
 app.post("/register", (req, res) => {
 
+  let randomUserID = generateRandomString(); 
+  users[randomUserID] = {
+    id: randomUserID,
+    email: req.body.email,
+    password: req.body.password
+  } 
   res.redirect("/urls"); 
 });
-
 
 
 
