@@ -13,7 +13,7 @@
 
     <% if (username) { %>
       <form method="POST" action="/logout">
-        <label for="logout">Logged in as: <%= username %>!</label>
+        <label>Logged in as: <%= username %>!</label>
         <input type="hidden" name="logout">
         <button type="logout" class="btn btn-primary">Log Out</button>
       </form>
