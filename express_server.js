@@ -87,6 +87,22 @@ app.get("/login", (req, res) => {
 });
 
 
+app.get("/register", (req, res) => {
+  const templateVars = { urls: urlDatabase, username: req.cookies["username"]};
+  res.render("urls_register", templateVars);
+
+
+
+});
+
+app.post("/register", (req, res) => {
+
+  res.redirect("/urls"); 
+});
+
+
+
+
 app.post("/login", (req, res) => {
   console.log(req.body); 
 
