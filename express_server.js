@@ -4,6 +4,7 @@ const app = express();
 const PORT = 8080; // default port 8080
 app.set("view engine", "ejs");
 const bodyParser = require("body-parser");
+const { generateRandomString, getEmail, emailPwdMatch, getUserID, urlsForUser } = require("./helpers");
 const cookieSession = require('cookie-session');
 const bcrypt = require('bcryptjs');
 
@@ -29,11 +30,6 @@ const urlDatabase = {
   }
 };
 
-
-const generateRandomString = function() {
-  return Math.random().toString(36).slice(2, 8);
-};
-
 const users = {
   "userRandomID": {
     id: "userRandomID",
@@ -47,48 +43,6 @@ const users = {
   }
 };
 
-
-const getEmail = function(obj, str) {
-  for (const id in obj) {
-    if (obj[id].email === str) {
-      return true; 
-    }
-  }
-};
-
-
-const emailPwdMatch = function(obj, email, pwd) {
-  for (const id in obj) {
-    if ((obj[id].email === email) && (bcrypt.compareSync(pwd, obj[id].password))) {
-      return true; 
-    }
-  }
-};
-
-const getUserID = function(userObj, email) {
-  let user_id;
-  for (let user in userObj) {
-    let emails = userObj[user].email;
-    if (emails === email) {
-      user_id = userObj[user].id;
-    }
-  }
-  return user_id;
-};
-
-const urlsForUser = function(userID, databaseObj) {
-  let newUserObj = {};
-
-  
-  for (const shortURL in databaseObj) {
-    let databaseUserID = databaseObj[shortURL].userID;
-    
-    if (userID === databaseUserID) {
-      newUserObj[shortURL] = databaseObj[shortURL];
-    }
-  }
-  return newUserObj;
-};
 
 
 
@@ -144,13 +98,15 @@ app.post("/register", (req, res) => {
     res.status(400).send(`Error: 400. Invalid email or password`);
   }
 
-  
+ 
   users[randomUserID] = {
     id: randomUserID,
     email: req.body.email,
     password: bcrypt.hashSync(req.body.password, 10) 
   };
 
+
+  
   const userObj = users[randomUserID]; 
   req.session.user = userObj; 
   const foundUserID = getUserID(users, req.body.email);
@@ -171,7 +127,7 @@ app.post("/login", (req, res) => {
   const userPassword = req.body.password; 
   const userPresence = emailPwdMatch(users, userEmail, userPassword);
 
-
+  
   if ((!userEmail) || (!userPassword)) {
     res.status(403).send(`Error: 403. Invalid email or password`);
   }
@@ -181,7 +137,7 @@ app.post("/login", (req, res) => {
     res.status(403).send(`Error: 403. Incorrect login credentials`);
   }
 
- 
+  
   req.session.user = req.body; 
   const foundUserID = getUserID(users, req.body.email);
   req.session.user_id = foundUserID;
